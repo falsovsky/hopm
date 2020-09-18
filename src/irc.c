@@ -178,6 +178,34 @@ m_ping(char *parv[], unsigned int parc, const char *msg, const char *source_p)
   irc_send("PONG %s", parv[2]);
 }
 
+/* m_nick
+ *
+ * parv[0]  = source
+ * parv[1]  = NICK
+ * parv[2]  = nickname
+ *
+ * source_p: UserInfo struct of the source user, or NULL if
+ * the source (parv[0]) is a server.
+ */
+static void
+m_nick(char *parv[], unsigned int parc, const char *msg, const char *source_p)
+{
+  if (parc < 3)
+    return;
+
+  if (OPT_DEBUG >= 2)
+    log_printf("IRC -> Nick was changed to %s", parv[2]);
+
+  /* If the nick is different than the one set in the config then change it */
+  if (strcmp(IRCItem.nick, parv[2]) != 0) {
+    irc_send("NICK %s", IRCItem.nick);
+
+    /* And also identify if needed */
+    if (!EmptyString(IRCItem.nickserv))
+      irc_send("%s", IRCItem.nickserv);
+  }
+}
+
 /* m_invite
  *
  * parv[0]  = source
@@ -758,6 +786,7 @@ irc_parse(void)
     { .command = "NOTICE",  .handler = m_notice      },
     { .command = "PRIVMSG", .handler = m_privmsg     },
     { .command = "PING",    .handler = m_ping        },
+    { .command = "NICK",    .handler = m_nick        },
     { .command = "INVITE",  .handler = m_invite      },
     { .command = "001",     .handler = m_perform     },
     { .command = "302",     .handler = m_userhost    },
