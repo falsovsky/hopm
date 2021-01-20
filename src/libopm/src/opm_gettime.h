@@ -1,5 +1,4 @@
 /*
- *  Copyright (c) 2002-2003 Erik Fears
  *  Copyright (c) 2014-2021 ircd-hybrid development team
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -18,9 +17,11 @@
  *  USA
  */
 
-#ifndef MAIN_H
-#define MAIN_H
-extern unsigned int OPT_DEBUG;
+#ifndef OPM_GETTIME_H
+#define OPM_GETTIME_H
 
-extern void main_restart(void);
-#endif /* MAIN_H */
+#include <time.h>
+
+extern time_t opm_gettime(void);
+#endif
+

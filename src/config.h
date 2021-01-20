@@ -1,6 +1,6 @@
 /*
  *  Copyright (c) 2002 Erik Fears
- *  Copyright (c) 2014-2020 ircd-hybrid development team
+ *  Copyright (c) 2014-2021 ircd-hybrid development team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@ struct IRCConf
   time_t readtimeout;
   time_t reconnectinterval;
   char *password;
-  char *vhost;
+  char *bind;
   char *nickserv;
   char *oper;
   char *mode;
@@ -90,7 +90,7 @@ struct ScannerConf
   node_t node;  /**< List node; linked into ScannerItemList */
   char *name;
   list_t protocols;
-  char *vhost;
+  char *bind;
   int fd;
   char *target_ip;
   int target_port;

@@ -1,5 +1,4 @@
 /*
- *  Copyright (c) 2002-2003 Erik Fears
  *  Copyright (c) 2014-2021 ircd-hybrid development team
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -18,9 +17,24 @@
  *  USA
  */
 
-#ifndef MAIN_H
-#define MAIN_H
-extern unsigned int OPT_DEBUG;
+#include <stdlib.h>
 
-extern void main_restart(void);
-#endif /* MAIN_H */
+#include "opm_gettime.h"
+
+time_t
+opm_gettime(void)
+{
+  struct timespec ts;
+
+#ifdef CLOCK_MONOTONIC_RAW
+  if (clock_gettime(CLOCK_MONOTONIC_RAW, &ts) == 0)
+#elif CLOCK_MONOTONIC
+  if (clock_gettime(CLOCK_MONOTONIC, &ts) == 0)
+#else
+  if (clock_gettime(CLOCK_REALTIME, &ts) == 0)
+#endif
+    return ts.tv_sec;
+
+  exit(EXIT_FAILURE);
+  return -1;
+}

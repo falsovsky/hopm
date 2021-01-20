@@ -1,6 +1,6 @@
 /*
  *  Copyright (c) 2002 Erik Fears
- *  Copyright (c) 2014-2020 ircd-hybrid development team
+ *  Copyright (c) 2014-2021 ircd-hybrid development team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -34,7 +34,8 @@
 #include "misc.h"
 #include "config.h"
 #include "stats.h"
-#include "libopm/src/opm_types.h"
+#include "opm_types.h"
+#include "opm_gettime.h"
 
 static time_t STATS_UPTIME;
 static unsigned int STATS_CONNECTIONS;
@@ -67,7 +68,7 @@ static struct StatsHash STATS_PROXIES[] =
 void
 stats_init(void)
 {
-  time(&STATS_UPTIME);
+  STATS_UPTIME = opm_gettime();
 }
 
 /* stats_openproxy
@@ -147,12 +148,8 @@ stats_dnsblsend(void)
 void
 stats_output(const char *target)
 {
-  time_t present;
-  time_t uptime;
+  time_t uptime = opm_gettime() - STATS_UPTIME;
   node_t *p;
-
-  time(&present);
-  uptime = present - STATS_UPTIME;
 
   irc_send("PRIVMSG %s :Uptime: %s", target, time_dissect(uptime));
 

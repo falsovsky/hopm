@@ -1,7 +1,7 @@
 SUBDIRS = libopm
 bin_PROGRAMS = hopm
 
-AM_CPPFLAGS = -DHOPM_PREFIX="\"$(prefix)\"" -DHOPM_ETCDIR="\"$(sysconfdir)\"" -DHOPM_LOGDIR="\"$(localstatedir)/log\"" -DHOPM_BINPATH="\"$(bindir)/hopm\""
+AM_CPPFLAGS = -DHOPM_PREFIX="\"$(prefix)\"" -DHOPM_ETCDIR="\"$(sysconfdir)\"" -DHOPM_LOGDIR="\"$(localstatedir)/log\"" -DHOPM_BINPATH="\"$(bindir)/hopm\"" -I$(top_srcdir)/src/libopm/src/
 AM_YFLAGS = -d
 
 hopm_SOURCES = compat.c        \
@@ -39,7 +39,6 @@ hopm_SOURCES = compat.c        \
                patricia.h      \
                scan.c          \
                scan.h          \
-               serno.h         \
                stats.c         \
                stats.h
 

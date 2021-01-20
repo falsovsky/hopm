@@ -1,6 +1,6 @@
 /*
  *  Copyright (c) 2002 Erik Fears
- *  Copyright (c) 2014-2020 ircd-hybrid development team
+ *  Copyright (c) 2014-2021 ircd-hybrid development team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -35,6 +35,7 @@
 #include "scan.h"
 #include "memory.h"
 #include "stats.h"
+#include "opm_gettime.h"
 
 
 static list_t COMMANDS;  /* List of active commands */
@@ -108,8 +109,7 @@ command_create(const struct OperCommandHash *tab, const char *param, const char 
   command->tab = tab;
   command->irc_nick = xstrdup(irc_nick);
   command->target = target;
-
-  time(&command->added);
+  command->added = opm_gettime();
 
   return command;
 }
@@ -226,15 +226,13 @@ command_timer(void)
 {
   static unsigned int interval;
   node_t *node, *node_next;
-  time_t present;
+  time_t present = opm_gettime();
 
   /* Only perform command removal every OptionsItem.command_interval seconds */
   if (interval++ < OptionsItem.command_interval)
     return;
   else
     interval = 0;
-
-  time(&present);
 
   LIST_FOREACH_SAFE(node, node_next, COMMANDS.head)
   {

@@ -1,6 +1,6 @@
 /*
  *  Copyright (c) 2002 Erik Fears
- *  Copyright (c) 2014-2020 ircd-hybrid development team
+ *  Copyright (c) 2014-2021 ircd-hybrid development team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -142,6 +142,7 @@ include   \.include{WS}(\<.*\>|\".*\")
 ADDRESS_FAMILY          { return ADDRESS_FAMILY; }
 AWAY                    { return AWAY;         }
 BAN_UNKNOWN             { return BAN_UNKNOWN;  }
+BIND                    { return BIND;         }
 BLACKLIST               { return BLACKLIST;    }
 CHANNEL                 { return CHANNEL;      }
 COMMAND_INTERVAL        { return COMMAND_INTERVAL; }
@@ -196,7 +197,6 @@ TLS_HOSTNAME_VERIFICATION { return TLS_HOSTNAME_VERIFICATION; }
 TYPE                    { return TYPE;         }
 USER                    { return USER;         }
 USERNAME                { return USERNAME;     }
-VHOST                   { return VHOST;        }
 
 years                   { return YEARS; }
 year                    { return YEARS; }

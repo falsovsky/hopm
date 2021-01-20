@@ -1,6 +1,6 @@
 /*
  *  Copyright (c) 2002 Erik Fears
- *  Copyright (c) 2014-2020 ircd-hybrid development team
+ *  Copyright (c) 2014-2021 ircd-hybrid development team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -217,7 +217,7 @@ scan_init(void)
     opm_config(scs->scanner, OPM_CONFIG_SCAN_PORT, &sc->target_port);
     opm_config(scs->scanner, OPM_CONFIG_TIMEOUT, &sc->timeout);
     opm_config(scs->scanner, OPM_CONFIG_MAX_READ, &sc->max_read);
-    opm_config(scs->scanner, OPM_CONFIG_BIND_IP, sc->vhost);
+    opm_config(scs->scanner, OPM_CONFIG_BIND_IP, sc->bind);
 
     /* add target strings */
     LIST_FOREACH(p2, sc->target_string.head)

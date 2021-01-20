@@ -1,6 +1,6 @@
 /*
  *  Copyright (c) 2002-2003 Erik Fears
- *  Copyright (c) 2014-2020 ircd-hybrid development team
+ *  Copyright (c) 2014-2021 ircd-hybrid development team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -54,7 +54,7 @@
 #include "negcache.h"
 #include "memory.h"
 #include "main.h"
-#include "serno.h"
+#include "opm_gettime.h"
 
 
 /*
@@ -244,8 +244,8 @@ static void
 m_ctcp(char *parv[], unsigned int parc, const char *msg, const char *source_p)
 {
   if (strncasecmp(parv[3], "\001VERSION\001", 9) == 0)
-    irc_send("NOTICE %s :\001VERSION Hybrid Open Proxy Monitor %s(%s)\001",
-             source_p, VERSION, SERIALNUM);
+    irc_send("NOTICE %s :\001VERSION Hybrid Open Proxy Monitor %s\001",
+             source_p, VERSION);
 }
 
 /* m_privmsg
@@ -507,7 +507,7 @@ irc_init(void)
 
   memset(&IRC_SVR, 0, sizeof(IRC_SVR));
 
-  if (!EmptyString(IRCItem.vhost))
+  if (!EmptyString(IRCItem.bind))
   {
     memset(&hints, 0, sizeof(hints));
 
@@ -515,7 +515,7 @@ irc_init(void)
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_flags = AI_NUMERICHOST;
 
-    n = getaddrinfo(IRCItem.vhost, NULL, &hints, &res);
+    n = getaddrinfo(IRCItem.bind, NULL, &hints, &res);
     if (n)
     {
       log_printf("IRC -> getaddrinfo() error: %s", gai_strerror(n));
@@ -571,7 +571,7 @@ irc_init(void)
   {
     if (bind(IRC_FD, res->ai_addr, res->ai_addrlen))
     {
-      log_printf("IRC -> error binding to %s: %s", IRCItem.vhost, strerror(errno));
+      log_printf("IRC -> error binding to %s: %s", IRCItem.bind, strerror(errno));
       exit(EXIT_FAILURE);
     }
 
@@ -686,20 +686,16 @@ irc_close(void)
 static void
 irc_connect(void)
 {
-  time_t present;
-
-  time(&present);
-
   /* Only try to reconnect every IRCItem.reconnectinterval seconds */
-  if ((present - IRC_LASTRECONNECT) < IRCItem.reconnectinterval)
+  if ((opm_gettime() - IRC_LASTRECONNECT) < IRCItem.reconnectinterval)
   {
     /* Sleep to avoid excessive CPU */
     sleep(1);
     return;
   }
 
-  time(&IRC_LASTRECONNECT);
-  time(&IRC_LAST);
+  IRC_LASTRECONNECT =
+  IRC_LAST = opm_gettime();
 
   irc_init();
 
@@ -743,7 +739,7 @@ irc_connect(void)
            IRCItem.username,
            IRCItem.username,
            IRCItem.realname);
-  time(&IRC_LAST);
+  IRC_LAST = opm_gettime();
 }
 
 /* irc_parse
@@ -804,7 +800,7 @@ irc_parse(void)
   if (OPT_DEBUG >= 2)
     log_printf("IRC READ -> %s", IRC_RAW);
 
-  time(&IRC_LAST);
+  IRC_LAST = opm_gettime();
 
   /* Store a copy of IRC_RAW for the handlers (for functions that need PROOF) */
   strlcpy(msg, IRC_RAW, sizeof(msg));
@@ -1046,11 +1042,7 @@ irc_send_channels(const char *data, ...)
 void
 irc_timer(void)
 {
-  time_t present, delta;
-
-  time(&present);
-
-  delta = present - IRC_LAST;
+  time_t delta = opm_gettime() - IRC_LAST;
 
   /* No data in IRCItem.readtimeout seconds */
   if (delta >= IRCItem.readtimeout)
@@ -1059,7 +1051,7 @@ irc_timer(void)
     irc_close();
 
     /* Make sure we don't do this again for a while */
-    time(&IRC_LAST);
+    IRC_LAST = opm_gettime();
   }
   else if (delta >= IRCItem.readtimeout / 2)
   {
